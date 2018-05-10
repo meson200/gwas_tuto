@@ -1,6 +1,6 @@
 # PLINK
 
-PLINK is a useful tool to quickly process and manipulate GWAS data formats. For more information, visit a [developper's website] (http://zzz.bwh.harvard.edu/plink/index.shtml)
+PLINK is a useful tool to quickly process and manipulate GWAS data formats. For more information, visit a [developper's website](http://zzz.bwh.harvard.edu/plink/index.shtml)
 
 ## PLINK data format
 PLINK has its own format for genotype encoding, which is widely adopted by many GWAS data sources. 
@@ -23,7 +23,7 @@ This shows what's in the .bim file from the Hapmap phase 2 dataset:
 head -n 10 hapmap_JPT_CHB_r23a.bim
 ```
 
-More information on file formats can be found [here] (https://www.cog-genomics.org/plink2/formats#map) 
+More information on file formats can be found [here](https://www.cog-genomics.org/plink2/formats#map) 
 
 ## Filtering
 The following command will extract only chromosome 8 data from the hapmap data:
@@ -49,7 +49,7 @@ The first step in a typical GWAS is to remove errorneous genotypes or individual
 * Remove genotypes with calling rate less than 95% 
 * Remove SNPs that deviates from Hardy-Weinberg Equilibrium (HWE). Under the assumption that the individuals in the dataset are unrelated, deviation from HWE can indicate genotype error (HWE is broken when there is strong evolutionary selection/inbreeding)
 
-Consult [this reference] (https://www.ncbi.nlm.nih.gov/pubmed/21085122) for 
+Consult [this reference](https://www.ncbi.nlm.nih.gov/pubmed/21085122) for 
 more details.
 
 * Allele frequency

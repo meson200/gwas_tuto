@@ -12,7 +12,7 @@ PLINK has its own format for genotype encoding, which is widely adopted by many 
 * BED (binary format): .bed is a compressed version of .ped and is recommended because it saves space and time. When you are received a .ped file, it can be converted to .bed file using the --make-bed option in PLINK::
 
 ```
-plink --noweb --file test.ped --make-bed --out test_convert
+./plink --noweb --file toy --make-bed --out test_convert
 ```
 
 Unlike .ped, which contains data pertaining family relations and phenotypes, .bed purely contains genotypes. Thus, when .ped is converted to .bed, the family data is separately written in a .fam file. The binary format accompanies a genomic map file .bim file which is equivalent to the .map file in non-binary file system.  
@@ -29,7 +29,7 @@ More information on file formats can be found [here](https://www.cog-genomics.or
 The following command will extract only chromosome 8 data from the hapmap data:
 
 ```
-plink --noweb --bfile hapmap_JPT_CHB_r23a --chr 8 --make-bed --out hapmap_JPTCHB_chr8 
+./plink --noweb --bfile hapmap_JPT_CHB_r23a --chr 8 --make-bed --out hapmap_JPTCHB_chr8 
 ```
 
 Explanation on the command above:
@@ -54,19 +54,19 @@ more details.
 
 * Allele frequency
 ```
-plink --noweb --bfile hapmap_JPTCHB_chr8 --freq --out hapmap_chr8_freq
+./plink --noweb --bfile hapmap_JPTCHB_chr8 --freq --out hapmap_chr8_freq
 ```
 The allele frequency statistics per SNP are now stored in hapmap_chr8_freq.frq.
 
 * Genotype calling(missing) rate
 ```
-plink --noweb --bfile hapmap_JPTCHB_chr8 --missing --out hapmap_chr8_missing
+./plink --noweb --bfile hapmap_JPTCHB_chr8 --missing --out hapmap_chr8_missing
 ```
 Per-individual and per-SNP missing rates are stored in .imiss and .lmiss, respectively.
 
 * HWE
 ```
-plink --noweb --bfile hapmap_JPTCHB_chr8 --hardy --out hapmap_chr8_hardy
+./plink --noweb --bfile hapmap_JPTCHB_chr8 --hardy --out hapmap_chr8_hardy
 ```
 HWE p-values for each SNP are stored in .hwe file (lower p-value indicates deviation from the equilibrium).
 
@@ -74,7 +74,7 @@ HWE p-values for each SNP are stored in .hwe file (lower p-value indicates devia
 The command below creates a new genotype dataset from the original data by excluding the individuals/SNPs that fails the quality cutoffs as given in command options:
 
 ```
-plink --noweb --bfile hapmap_JPTCHB_chr8 --mind 0.1 --geno 0.05 --maf 0.01 --hwe 0.00001 --make-bed --out hapmap_JPTCHB_chr8_QC 
+./plink --noweb --bfile hapmap_JPTCHB_chr8 --mind 0.1 --geno 0.05 --maf 0.01 --hwe 0.00001 --make-bed --out hapmap_JPTCHB_chr8_QC 
 ```
 
 In this example, the maximum per-individual missing rate 10%, maximum per-SNP missing rate 5%, minimum MAF of 1%, and minimum HWE p-value of 1E-5 are applied as thresholds.
@@ -85,12 +85,12 @@ Linkage disequilibrium refers to non-random association between two loci. LD occ
 Using plink, the genotype data can be 'pruned' by removing SNPs that are in LD above certain level of correlation:
 
 ```
-plink --noweb --bfile hapmap_JPTCHB_chr8_QC --indep-pairwise 50 5 0.2 --out LDsnps
+./plink --noweb --bfile hapmap_JPTCHB_chr8_QC --indep-pairwise 50 5 0.2 --out LDsnps
 ```
 The command above only creates a list of the SNPs that are in linkage equilibrium (high statistical independence). In order to actually create a pruned dataset, use --extract option:
 
 ```
-plink --noweb --bfile hapmap_JPTCHB_chr8_QC --extract LDsnps.prune.in --make-bed --out hapmap_JPTCHB_chr8_QC_pruned 
+./plink --noweb --bfile hapmap_JPTCHB_chr8_QC --extract LDsnps.prune.in --make-bed --out hapmap_JPTCHB_chr8_QC_pruned 
 ```
 # GenABEL
 
@@ -106,7 +106,7 @@ install.packages("GenABEL")
 GenABEL cannot recognize a binary .bed format, so the data first has to be converted to .ped using plink first (for the sake of running speed, we will use the pruned chromosome 8 data from the previous example)
 
 ```
-plink --noweb --bfile hapmap_JPTCHB_chr8_QC_pruned --recode --tab --out hapmap_JPTCHB_chr8_QC_pruned
+./plink --noweb --bfile hapmap_JPTCHB_chr8_QC_pruned --recode --tab --out hapmap_JPTCHB_chr8_QC_pruned
 ``` 
  
 This will create hapmap_JPTCHB_chr8_QC_pruned.ped/map.

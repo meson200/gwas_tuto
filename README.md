@@ -125,6 +125,67 @@ dt <- load.gwaa.data('path_to_raw_file','path_to_phenotype_file')
 
 The phenotype file is included in the directory /ptdata/ under the github clone.
 
+## Association testing
+A function 'qtscore' performs a genome-wide scan, which tests univariate associations between every SNPs in the array with the endpoint phenotype. The qtscore uses the Cochran-Armitage trend test, which is a modified version of the chi-square test when the number of categories of a predictor exceeds 2. 
+
+```
+an0 <- qtscore(pheno,dt,trait="binomial",clambda=FALSE)
+``` 
+
+The object an0 stores association test results including effect sizes and p-values. The top 10 SNPs with the strongest association can be checked with:
+
+```
+summary(an0)
+```
+
+There are two types of tests that were performed: 
+
+* Two degrees of freedom: if the risk allele is say "B", increase/decrease in risk from having only one risk allele (i.e. when the genotype is AB) is independent from having two risk alleles (BB) -> corresponds to effAB/effBB/P2df 
+
+* One degree of freedom (also known as the additive model): if the relative risk increases linearly with the number of the risk allele B -> corresponds to effB/P1df 
+
+Distribution of the association strengths or p-values amongst SNPs is an important indicator of the presence of genetic signals. It can be intuitively visualized by the quantile-quantile plot, which plots empirical p-values fromSNPs against expected p-values from normal distribution:
+
+```
+estlambda(an0[, "P1df"], plot=TRUE)
+```
+
+In addition to the plot, this function calculates an inflation factor or "lambda" (to be explained next) 
+
+Another visualization method is the "Manhattan plot" where -log of association p-values are shown in a scatter plot across chromosomes. It gives an ideaof which regions of which chromosomes have signals.
+
+```
+plot(an0) 
+```
+
+## Population structure
+Association statistics can be confounded by uneven distribution of alleles across regions between which the case/control ratios are different. In this case, association strengths are inflated for a large number of the SNPs which are more prelavent in one population group.
+
+Such inflation can be checked in the qq plot based on how much are the points deviating from y=x in overall. This is quantified by the inflation factor, which is roughly proportional to the median of chi-square values over all SNPs [reference](https://www.ncbi.nlm.nih.gov/pubmed/20548291)
+
+The code below adds a synthetic phenotype "pheno.2" which is completed confounded by population (a Chinese subgroup is assigned to 0, while Japanese gets 1)
+
+```
+dt <- add.phdata(dt,rep(1,nids(dt)),name="pheno.2")
+phdata(dt)$pheno.2[phdata(dt)$eth=="CHB"] <- 0
+```
+
+Let's see how the q-q plot looks now:
+
+```
+an0 <- qtscore(pheno.2,dt,trait="binomial",clambda=FALSE)
+estlambda(an0[, "P1df"], plot=TRUE)
+```
+
+Estimated inflation factor is a way above what is considered inflation (1.05)
+
+There are two ways to correct for population structure:
+
+* Genomic control: divide all the test statistics by the inflation factor. Simple but assumes that every SNP is inflated to the same degree.
+
+* Population structures: This estimates low-dimensional patterns (clusters) in the genotypes from genetic similarity between pairs of individuals, and corrects the association strength while taking into account this sample covariance. When sample subgroups or strata are already known, a mixture model can be used. Otherwise, PCA can be performed to factorize the population structures, and    
+
+
  
 
 

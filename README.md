@@ -173,8 +173,8 @@ phdata(dt)$pheno.2[phdata(dt)$eth=="CHB"] <- 0
 Let's see how the q-q plot looks now:
 
 ```
-an0 <- qtscore(pheno.2,dt,trait="binomial",clambda=FALSE)
-estlambda(an0[, "P1df"], plot=TRUE)
+an0.i <- qtscore(pheno.2,dt,trait="binomial",clambda=FALSE)
+estlambda(an0.i[, "P1df"], plot=TRUE)
 ```
 
 Estimated inflation factor is a way above what is considered inflation (1.05)
@@ -183,10 +183,34 @@ There are two ways to correct for population structure:
 
 * Genomic control: divide all the test statistics by the inflation factor. Simple but assumes that every SNP is inflated to the same degree.
 
-* Population structures: This estimates low-dimensional patterns (clusters) in the genotypes from genetic similarity between pairs of individuals, and corrects the association strength while taking into account this sample covariance. When sample subgroups or strata are already known, a mixture model can be used. Otherwise, PCA can be performed to factorize the population structures, and    
+* Population structures: This estimates low-dimensional patterns (clusters) in the genotypes from genetic similarity between pairs of individuals, and corrects the association strength while taking into account this sample covariance. When sample subgroups or strata are already known, a mixture model can be used. Otherwise, PCA can be performed to find components for the population structures, and the PCs can be used as covariates at univariate tests for SNPs. This is the most widely used method for many GWAS where ancestry information is not clearly given (e.g. Caucasian Americans with European origin). EIGENSTRAT is a widely used tool for PCA on genotype data [(reference)](https://www.nature.com/articles/ng1847)
 
+GenABEL also offers the population structure analysis. First, a kinship matrix (pairwise similarity in genotype between a pair of individuals)is built first
 
+```
+dt.gkin <- ibs(dt[, autosomal(dt)], weight="freq")
+```
  
+The kinship matrix is then used for multidimensional scaling (similar to PCAbut not the same) which results in two components (pcs[,1] and pcs[,2])
+
+```
+dst <- as.dist(0.5-dt.gkin)
+pcs <- cmdscale(dst,k=2)
+plot(pcs[,1],pcs[,2],col=as.factor(phdata(dt)$eth))
+``` 
+
+From the plot separation between the two ethnic groups is clearly seen.
+Now, the association tests are redone using the two principal components as covariates:
+
+```
+dt <- add.phdata(dt,pcs[,2],"PC1")
+dt <- add.phdata(dt,pcs[,2],"PC2")
+an0.i.corr <- qtscore(pheno.2~PC1+PC2,dt,trait="binomial",clambda=FALSE)
+estlambda(an0.i.corr[,"P1df"],plot=TRUE)
+```
+
+## References 
+[GenABEL tutorial](http://www.genabel.org/tutorials)   
 
 
 
